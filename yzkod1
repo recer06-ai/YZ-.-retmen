@@ -1,0 +1,296 @@
+
+import React, { useState } from 'react';
+import Sidebar from './components/Sidebar';
+import CurriculumView from './components/CurriculumView';
+import LessonGenerator from './components/LessonGenerator';
+import AnalyticsView from './components/AnalyticsView';
+import AssistantView from './components/AssistantView';
+import StudentView from './components/StudentView';
+import TeacherDashboard from './components/TeacherDashboard';
+import DownloadModal from './components/DownloadModal';
+import { UserRole } from './types';
+import { GraduationCap, Users, KeyRound, Hash, ArrowRight, AlertCircle, Zap, Menu } from 'lucide-react';
+
+// Login Screen Component with Verification
+const LoginScreen = ({ onLogin }: { onLogin: (role: UserRole) => void }) => {
+  const [selectedRole, setSelectedRole] = useState<UserRole>(null);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [error, setError] = useState('');
+
+  const handleVerification = () => {
+    setError('');
+    
+    if (selectedRole === 'teacher') {
+      if (verificationCode === '964306') {
+        onLogin('teacher');
+      } else {
+        setError('Hatalı Öğretmen Kodu!');
+      }
+    } else if (selectedRole === 'student') {
+      if (/^\d{3,}$/.test(verificationCode)) {
+        onLogin('student');
+      } else {
+        setError('Geçersiz Okul Numarası! En az 3 haneli bir sayı giriniz.');
+      }
+    }
+  };
+
+  const resetSelection = () => {
+    setSelectedRole(null);
+    setVerificationCode('');
+    setError('');
+  };
+
+  return (
+    <div className="min-h-screen bg-[#05050A] flex flex-col items-center justify-center p-4 relative overflow-hidden text-white selection:bg-cyan-500/30">
+      {/* Unique Background Pattern */}
+      <div className="absolute inset-0 z-0 opacity-20" style={{
+        backgroundImage: 'linear-gradient(#2a2a35 1px, transparent 1px), linear-gradient(to right, #2a2a35 1px, transparent 1px)',
+        backgroundSize: '40px 40px'
+      }}></div>
+      
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] z-0"></div>
+      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[100px] z-0"></div>
+
+      <div className="text-center mb-12 animate-fadeIn z-10 flex flex-col items-center relative">
+        <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-indigo-600 rounded-2xl blur-lg opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="bg-[#0B0C15] border border-white/10 p-5 rounded-2xl shadow-2xl relative">
+              <Zap className="text-cyan-400 w-12 h-12 md:w-16 md:h-16 fill-cyan-400/20" />
+            </div>
+        </div>
+        <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-500 mb-4 mt-8 tracking-tighter">
+          YZöğretmen
+        </h1>
+        <p className="text-slate-400 text-lg md:text-xl max-w-md mx-auto font-light tracking-wide">
+          Geleceğin eğitimi, <span className="text-white font-medium">bugünün teknolojisiyle.</span>
+        </p>
+      </div>
+
+      {!selectedRole ? (
+        // Role Selection Grid
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl animate-fadeIn z-10" style={{animationDelay: '0.1s'}}>
+          <button 
+            onClick={() => setSelectedRole('student')}
+            className="group relative bg-[#0B0C15]/60 backdrop-blur-xl border border-white/5 hover:border-cyan-500/50 rounded-[2rem] p-8 transition-all duration-500 text-left hover:shadow-[0_0_50px_-12px_rgba(6,182,212,0.3)] overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-cyan-500/20"></div>
+            
+            <div className="bg-white/5 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform border border-white/10 group-hover:border-cyan-500/50">
+              <GraduationCap className="text-cyan-400" size={32} />
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Öğrenci</h2>
+            <p className="text-slate-400 mb-6 text-sm leading-relaxed font-light">
+              Kişisel yapay zeka koçunla hedeflerine ulaş, sınırlarını zorla.
+            </p>
+            <div className="flex items-center text-cyan-400 text-sm font-bold group-hover:translate-x-2 transition-transform tracking-wider uppercase">
+              Sisteme Gir <ArrowRight size={16} className="ml-2" />
+            </div>
+          </button>
+
+          <button 
+            onClick={() => setSelectedRole('teacher')}
+            className="group relative bg-[#0B0C15]/60 backdrop-blur-xl border border-white/5 hover:border-indigo-500/50 rounded-[2rem] p-8 transition-all duration-500 text-left hover:shadow-[0_0_50px_-12px_rgba(99,102,241,0.3)] overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-indigo-500/20"></div>
+
+            <div className="bg-white/5 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform border border-white/10 group-hover:border-indigo-500/50">
+              <Users className="text-indigo-400" size={32} />
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Öğretmen</h2>
+            <p className="text-slate-400 mb-6 text-sm leading-relaxed font-light">
+              Sınıfını verilerle yönet, saniyeler içinde benzersiz içerikler üret.
+            </p>
+            <div className="flex items-center text-indigo-400 text-sm font-bold group-hover:translate-x-2 transition-transform tracking-wider uppercase">
+              Sisteme Gir <ArrowRight size={16} className="ml-2" />
+            </div>
+          </button>
+        </div>
+      ) : (
+        // Verification Form
+        <div className="w-full max-w-md bg-[#0B0C15]/80 backdrop-blur-xl p-10 rounded-[2rem] border border-white/10 shadow-2xl animate-fadeIn z-10 relative">
+           <button 
+            onClick={resetSelection}
+            className="absolute top-6 left-6 text-slate-500 hover:text-white transition-colors flex items-center text-sm"
+          >
+            <ArrowRight className="rotate-180 mr-1" size={14}/> Geri
+          </button>
+          
+          <div className="text-center mb-10 mt-6">
+            <h2 className="text-3xl font-bold text-white mb-2">
+              Kimlik Doğrulama
+            </h2>
+            <p className="text-slate-500 text-sm font-light">
+              Güvenli giriş için {selectedRole === 'student' ? 'okul numaranı' : 'kurum kodunu'} gir.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <div className="relative group">
+              <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-white transition-colors">
+                {selectedRole === 'student' ? <Hash size={20} /> : <KeyRound size={20} />}
+              </div>
+              <input
+                type="text"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                placeholder={selectedRole === 'student' ? 'Okul No' : 'Kurum Kodu'}
+                className="w-full bg-black/40 border border-white/10 text-white rounded-2xl pl-14 pr-4 py-4 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all placeholder:text-slate-700 font-mono text-lg tracking-widest"
+                onKeyDown={(e) => e.key === 'Enter' && handleVerification()}
+              />
+            </div>
+
+            {error && (
+              <div className="flex items-center text-red-400 text-sm bg-red-500/10 p-4 rounded-xl border border-red-500/20 backdrop-blur-md">
+                <AlertCircle size={16} className="mr-2 flex-shrink-0" />
+                {error}
+              </div>
+            )}
+
+            <button
+              onClick={handleVerification}
+              className={`w-full py-4 rounded-2xl font-bold text-white transition-all shadow-lg hover:scale-[1.02] active:scale-[0.98] tracking-wide uppercase text-sm ${
+                selectedRole === 'student' 
+                  ? 'bg-cyan-600 hover:bg-cyan-500 shadow-cyan-900/20' 
+                  : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-900/20'
+              }`}
+            >
+              Programa Eriş
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+function App() {
+  const [role, setRole] = useState<UserRole>(null);
+  const [activeTab, setActiveTab] = useState('');
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const handleLogin = (selectedRole: UserRole) => {
+    setRole(selectedRole);
+    if (selectedRole === 'teacher') setActiveTab('teacher_dashboard');
+    else setActiveTab('student_dashboard');
+  };
+
+  const handleLogout = () => {
+    setRole(null);
+    setActiveTab('');
+    setIsSidebarOpen(false);
+  };
+
+  const renderContent = () => {
+    if (role === 'teacher') {
+      switch (activeTab) {
+        case 'teacher_dashboard': return <TeacherDashboard />;
+        case 'curriculum': return <CurriculumView />;
+        case 'lesson': return <LessonGenerator />;
+        case 'analytics': return <AnalyticsView />;
+        case 'assistant': return <AssistantView />;
+        default: return <TeacherDashboard />;
+      }
+    } else {
+      return <StudentView initialTab={activeTab} />;
+    }
+  };
+
+  if (!role) {
+    return <LoginScreen onLogin={handleLogin} />;
+  }
+
+  return (
+    <div className="min-h-screen bg-[#05050A] font-sans text-slate-200 selection:bg-cyan-500/30 overflow-x-hidden">
+      {/* Global Background Grid */}
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.03]" style={{
+        backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(to right, #fff 1px, transparent 1px)',
+        backgroundSize: '50px 50px'
+      }}></div>
+      
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/80 z-20 backdrop-blur-sm md:hidden animate-fadeIn"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
+
+      <Sidebar 
+        activeTab={activeTab} 
+        setActiveTab={(tab) => {
+          setActiveTab(tab);
+          setIsSidebarOpen(false);
+        }} 
+        role={role}
+        onLogout={handleLogout}
+        onDownloadClick={() => setIsDownloadModalOpen(true)}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
+      
+      <DownloadModal 
+        isOpen={isDownloadModalOpen} 
+        onClose={() => setIsDownloadModalOpen(false)} 
+      />
+      
+      {/* Mobile Header */}
+      <div className="md:hidden bg-[#0B0C15]/80 backdrop-blur-xl text-white p-4 sticky top-0 z-20 flex justify-between items-center border-b border-white/5">
+        <div className="flex items-center space-x-3">
+           <button 
+             onClick={() => setIsSidebarOpen(true)}
+             className="p-2 -ml-2 text-slate-400 hover:text-white"
+           >
+             <Menu size={24} />
+           </button>
+           <div className="bg-gradient-to-tr from-cyan-600 to-indigo-600 p-1.5 rounded-lg shadow-lg">
+             <Zap className="text-white w-5 h-5 fill-white" />
+           </div>
+           <h1 className="text-lg font-bold tracking-tight">YZöğretmen</h1>
+        </div>
+        <div className="flex items-center gap-2">
+            <span className={`text-[10px] px-2 py-1 rounded border font-bold uppercase ${role === 'student' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'}`}>
+                {role === 'student' ? 'ÖĞR' : 'EĞT'}
+            </span>
+        </div>
+      </div>
+
+      <main className="md:ml-[280px] p-4 md:p-8 pb-24 md:pb-8 max-w-[1920px] mx-auto relative z-10 transition-all duration-300">
+        <header className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 md:mb-10 gap-2">
+          <div>
+            <h2 className="text-2xl md:text-4xl font-black text-white tracking-tight mb-1">
+              {activeTab === 'teacher_dashboard' && 'Kontrol Merkezi'}
+              {activeTab === 'curriculum' && 'Müfredat Mimarı'}
+              {activeTab === 'lesson' && 'İçerik Stüdyosu'}
+              {activeTab === 'analytics' && 'Veri Analitiği'}
+              {activeTab === 'assistant' && 'Yapay Zeka Asistanı'}
+              
+              {activeTab === 'student_dashboard' && 'Ana Üs'}
+              {activeTab === 'study_plan' && 'Görev Planlayıcı'}
+              {activeTab === 'topic_tracker' && 'Hedef Takibi'}
+              {activeTab === 'exam_analysis' && 'Performans Analizi'}
+              {activeTab === 'ai_coach' && 'AI Mentor'}
+            </h2>
+            <p className="text-slate-400 font-light text-sm md:text-base">
+              {role === 'student' ? 'Limitlerini zorla, potansiyelini keşfet.' : 'Eğitimi teknolojiyle yeniden tasarla.'}
+            </p>
+          </div>
+          <div className="hidden md:block">
+            <div className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border backdrop-blur-md ${
+              role === 'student' 
+                ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20 shadow-[0_0_15px_-5px_rgba(6,182,212,0.3)]' 
+                : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20 shadow-[0_0_15px_-5px_rgba(99,102,241,0.3)]'
+            }`}>
+              {role === 'student' ? 'Öğrenci Modu' : 'Öğretmen Modu'}
+            </div>
+          </div>
+        </header>
+
+        {renderContent()}
+      </main>
+    </div>
+  );
+}
+
+export default App;
